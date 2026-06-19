@@ -1,98 +1,176 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Academic Pinpoint
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Agregador de oportunidades acadêmicas (bolsas, editais, estágios, eventos) com
+feed personalizado. Projeto Integrado 1 — UFES.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Sumário
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Diagrama de Classes](#diagrama-de-classes)
+- [Ferramentas Escolhidas](#ferramentas-escolhidas)
+- [Frameworks Reutilizados](#frameworks-reutilizados)
+- [Geração de Documentação do Código](#geração-de-documentação-do-código)
+- [Como Executar o Sistema](#como-executar-o-sistema)
 
-## Project setup
+---
+
+## Diagrama de Classes
+
+
+![Diagrama de Classes de Domínio](docs/domain.png)
+
+
+### Resumo do Domínio
+
+| Classe / Enum | Descrição |
+|---|---|
+| `Usuario` | Estudante cadastrado. Possui preferências (áreas e tipos) e pode salvar oportunidades. |
+| `Oportunidade` | Bolsa, edital, estágio ou evento coletado de fontes externas. |
+| `OportunidadeSalva` | Classe de associação N:M entre Usuário e Oportunidade. |
+| `Preferencias` | Value object embutido no Usuário — áreas e tipos escolhidos no onboarding. |
+| `TipoOportunidade` | Enum: BOLSA, EDITAL, ESTÁGIO, EVENTO, INTERCÂMBIO, CONCURSO. |
+| `Area` | Enum: TECNOLOGIA, BIOLÓGICAS, HUMANAS, EXATAS, SOCIAIS_APLICADAS, etc. |
+| `Modalidade` | Enum: PRESENCIAL, REMOTO, HÍBRIDO. |
+
+
+## Ferramentas Escolhidas
+
+| Categoria | Ferramenta | Detalhes |
+|---|---|---|
+| **Controle de versão** | Git + GitHub | Repositório hospedado no GitHub |
+| **Build / Monorepo** | Turborepo + pnpm | Orquestra build e dev das apps JS/TS; pnpm como gerenciador de pacotes |
+| **Build (API)** | TypeScript Compiler (`tsc`) | Compila o código da API para JavaScript |
+| **Build (Web)** | Next.js | Build otimizado com SSR/SSG |
+| **Testes** | Jest + ts-jest | Testes unitários da API |
+| **Issue Tracking** | GitHub Issues | Controle de tarefas e bugs via issues do repositório |
+| **CI/CD** | GitHub Actions | Pipeline em `.github/workflows/ci.yml` — roda build, testes da API e smoke test do scraper |
+| **Container** | Nenhum (decisão de projeto) | SQLite em dev elimina necessidade de Docker. |
+| **Banco de Dados** | SQLite (dev) / Prisma ORM | Prisma gerencia migrations e seed. |
+| **Linter / Formatação** | TypeScript strict mode | `strict: true` no `tsconfig.json` |
+
+---
+
+## Frameworks Reutilizados
+
+### Backend
+
+| Framework / Lib | Versao | Finalidade |
+|---|---|---|
+| **NestJS** | 11.x | Framework HTTP com injeção de dependência e módulos |
+| **Prisma** | 6.x | ORM com migrations tipadas e client auto-gerado |
+| **bcryptjs** | 2.x | Hashing de senhas |
+| **@nestjs/jwt** | 11.x | Autenticacao via JSON Web Tokens |
+| **class-validator / class-transformer** | 0.14 / 0.5 | Validação e transformação de DTOs |
+| **RxJS** | 7.x | Programação reativa (dependência do NestJS) |
+
+### Frontend 
+
+| Framework / Lib | Versao | Finalidade |
+|---|---|---|
+| **Next.js** | 15.x | Framework React com SSR, roteamento e otimizações |
+| **React** | 19.x | Biblioteca de UI |
+| **Tailwind CSS** | 4.x | Estilização utilitária |
+
+### Scraper 
+
+| Framework / Lib | Versao | Finalidade |
+|---|---|---|
+| **FastAPI** | 0.115+ | Framework HTTP assíncrono em Python |
+| **BeautifulSoup4** | 4.12+ | Parsing de HTML para scraping |
+| **Playwright** | 1.49+ (opcional) | Scraping de páginas com renderização JavaScript |
+| **httpx** | 0.28+ | Cliente HTTP assíncrono |
+| **Pydantic** | 2.10+ | Validação de dados e schemas |
+
+> **Nota:** A tecnologia para o scraper ainda não foi decidida com 100% de certeza. Portanto, a documentação pode sofrer alterações.
+
+### Infra / Monorepo
+
+| Ferramenta | Versao | Finalidade |
+|---|---|---|
+| **Turborepo** | 2.x | Orquestração de builds e tasks no monorepo |
+| **pnpm** | 11.x | Gerenciador de pacotes com workspaces |
+
+---
+
+## Geração de Documentação do Código
+
+O projeto usa **TypeDoc** para gerar documentação HTML a partir dos comentários
+e tipos do código TypeScript.
+
+### Instalação e uso
 
 ```bash
-$ pnpm install
+# Instalar TypeDoc (uma única vez)
+pnpm add -D typedoc --filter @academic-pinpoint/api
+
+# Gerar documentação da API
+cd apps/api
+pnpm exec typedoc src/main.ts --out docs
+
+# Abrir no navegador
+start docs/index.html   # Windows
+# open docs/index.html  # macOS
+# xdg-open docs/index.html  # Linux
 ```
 
-## Compile and run the project
+Para o **scraper** (Python), pode-se usar o **pdoc**:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+cd apps/scraper
+pip install pdoc
+pdoc app --output-dir docs
 ```
 
-## Run tests
+---
+
+## Como Executar o Sistema
+
+### Pré-requisitos
+
+- **Node.js** 20+
+- **pnpm** (`npm i -g pnpm`)
+- **Python** 3.11+ (necessário apenas para o módulo de scraping)
+
+### Passos
 
 ```bash
-# unit tests
-$ pnpm run test
+# 1. Clonar o repositório
+git clone https://github.com/reetzRS/Academic-Pinpoint.git
+cd Academic-Pinpoint
 
-# e2e tests
-$ pnpm run test:e2e
+# 2. Instalar dependências
+pnpm install
 
-# test coverage
-$ pnpm run test:cov
+# 3. Configurar variáveis de ambiente
+#    Copiar o arquivo .env.example para .env em cada app que exigir
+#    e preencher as variáveis necessárias (ex.: DATABASE_URL, JWT_SECRET).
+
+# 4. Preparar o banco de dados (migrations + seed)
+pnpm db:setup
+
+# 5. Iniciar o projeto em modo de desenvolvimento
+pnpm dev
 ```
 
-## Deployment
+O comando `pnpm dev` sobe todas as aplicações do monorepo simultaneamente
+via Turborepo. As portas padrão são:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Serviço | Porta |
+|---|---|
+| Web (frontend) | 3000 |
+| API (backend) | 3001 |
+| Scraper | 8000 |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Para o **scraper** (Python), criar um virtualenv e instalar as dependências
+separadamente:
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+cd apps/scraper
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --port 8000
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
