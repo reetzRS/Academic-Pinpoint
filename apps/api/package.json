@@ -6,7 +6,12 @@
     "build": "tsc -p tsconfig.json",
     "dev": "ts-node src/main.ts",
     "start": "node dist/main.js",
+    "db:setup": "prisma migrate dev && prisma db seed",
+    "db:seed": "ts-node prisma/seed.ts",
     "test": "jest"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@academic-pinpoint/shared": "workspace:*",
