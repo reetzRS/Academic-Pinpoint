@@ -1,0 +1,61 @@
+// Dev local usa SQLite (zero infra). Para Postgres em produção:
+// trocar provider para "postgresql", ajustar DATABASE_URL e migrar
+// os campos JSON-em-string (areas, tipos, requisitos) para String[].
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  nome           String
+  email          String   @unique
+  senhaHash      String
+  curso          String?
+  // "user" | "admin" — admins gerenciam oportunidades manualmente
+  // (String em vez de enum por limitação do SQLite no Prisma)
+  role           String   @default("user")
+  // JSON arrays serializados (limitação de arrays no SQLite)
+  areas          String   @default("[]")
+  tipos          String   @default("[]")
+  onboardingDone Boolean  @default(false)
+  criadoEm       DateTime @default(now())
+
+  salvos SavedOpportunity[]
+}
+
+model Opportunity {
+  id             String    @id @default(cuid())
+  tipo           String
+  titulo         String
+  descricao      String
+  urlOrigem      String
+  hashDedup      String    @unique
+  fonte          String
+  instituicao    String?
+  prazoInscricao DateTime?
+  modalidade     String?
+  local          String?
+  valorBolsa     String?
+  requisitos     String    @default("[]")
+  areas          String    @default("[]")
+  coletadoEm     DateTime  @default(now())
+  atualizadoEm   DateTime  @updatedAt
+
+  salvos SavedOpportunity[]
+}
+
+model SavedOpportunity {
+  userId        String
+  opportunityId String
+  salvoEm       DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@id([userId, opportunityId])
+}
