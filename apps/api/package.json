@@ -17,6 +17,7 @@
     "@academic-pinpoint/shared": "workspace:*",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "@prisma/client": "^6.2.0",
     "bcryptjs": "^2.4.3",
