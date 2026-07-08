@@ -90,21 +90,61 @@ export class OpportunitiesService {
       }),
     ]);
 
+    const savedIds = await this.savedIds(userId, items);
     return {
       total,
       page,
       pageSize,
-      items: items.map((o) => this.toDto(o)),
+      items: items.map((o) => this.toDto(o, savedIds.has(o.id))),
     };
   }
 
-  async findById(id: string) {
+  async findById(id: string, userId?: string) {
     const opp = await this.prisma.opportunity.findUnique({ where: { id } });
     if (!opp) throw new NotFoundException("Oportunidade não encontrada");
-    return this.toDto(opp);
+    const savedIds = await this.savedIds(userId, [opp]);
+    return this.toDto(opp, savedIds.has(opp.id));
   }
 
-  private toDto(o: Opportunity) {
+  async save(userId: string, opportunityId: string) {
+    await this.findById(opportunityId);
+    await this.prisma.savedOpportunity.upsert({
+      where: { userId_opportunityId: { userId, opportunityId } },
+      create: { userId, opportunityId },
+      update: {},
+    });
+    return { salvo: true };
+  }
+
+  async unsave(userId: string, opportunityId: string) {
+    await this.prisma.savedOpportunity.deleteMany({
+      where: { userId, opportunityId },
+    });
+    return { salvo: false };
+  }
+
+  async listSaved(userId: string) {
+    const saved = await this.prisma.savedOpportunity.findMany({
+      where: { userId },
+      include: { opportunity: true },
+      orderBy: { salvoEm: "desc" },
+    });
+    return saved.map((s) => this.toDto(s.opportunity, true));
+  }
+
+  private async savedIds(
+    userId: string | undefined,
+    items: Opportunity[],
+  ): Promise<Set<string>> {
+    if (!userId || !items.length) return new Set();
+    const rows = await this.prisma.savedOpportunity.findMany({
+      where: { userId, opportunityId: { in: items.map((o) => o.id) } },
+      select: { opportunityId: true },
+    });
+    return new Set(rows.map((r) => r.opportunityId));
+  }
+
+  private toDto(o: Opportunity, salvo: boolean) {
     return {
       id: o.id,
       tipo: o.tipo,
@@ -120,6 +160,7 @@ export class OpportunitiesService {
       requisitos: parseArray(o.requisitos),
       areas: parseArray(o.areas),
       coletadoEm: o.coletadoEm.toISOString(),
+      salvo,
     };
   }
 }
