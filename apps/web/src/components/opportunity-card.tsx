@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Opportunity } from "@/lib/api";
+import { useState } from "react";
+import { api, Opportunity } from "@/lib/api";
 import { daysLeft, formatDate, TIPO_BADGE } from "@/lib/format";
 import { TIPO_LABELS } from "@academic-pinpoint/shared";
-import { CalendarIcon, PinIcon } from "./icons";
+import { BookmarkIcon, CalendarIcon, PinIcon } from "./icons";
 
 export function TipoBadge({ tipo }: { tipo: string }) {
   return (
@@ -18,6 +19,44 @@ export function TipoBadge({ tipo }: { tipo: string }) {
   );
 }
 
+export function SaveButton({
+  opportunity,
+  className = "",
+}: {
+  opportunity: Opportunity;
+  className?: string;
+}) {
+  const [salvo, setSalvo] = useState(opportunity.salvo);
+  const [busy, setBusy] = useState(false);
+
+  const toggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (busy) return;
+    setBusy(true);
+    try {
+      const res = salvo
+        ? await api.unsave(opportunity.id)
+        : await api.save(opportunity.id);
+      setSalvo(res.salvo);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={toggle}
+      aria-label={salvo ? "Remover dos salvos" : "Salvar oportunidade"}
+      className={`rounded-full p-1.5 transition hover:bg-navy-50 ${
+        salvo ? "text-gold-500" : "text-slate-400"
+      } ${className}`}
+    >
+      <BookmarkIcon className="h-5 w-5" filled={salvo} />
+    </button>
+  );
+}
+
 export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
   const dias = daysLeft(opportunity.prazoInscricao);
   return (
@@ -25,8 +64,9 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
       href={`/oportunidade/${opportunity.id}`}
       className="block rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:shadow-md"
     >
-      <div className="flex items-start">
+      <div className="flex items-start justify-between gap-2">
         <TipoBadge tipo={opportunity.tipo} />
+        <SaveButton opportunity={opportunity} />
       </div>
       <h3 className="mt-2 font-bold text-navy-800">{opportunity.titulo}</h3>
       <p className="mt-1 line-clamp-2 text-sm text-slate-500">
