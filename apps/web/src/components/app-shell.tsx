@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { clearSession, getSession, Session } from "@/lib/session";
 import {
   BookmarkIcon,
+  ClipboardIcon,
   CompassIcon,
   HomeIcon,
   LogoMark,
@@ -88,6 +89,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
+          {session.user.role === "admin" && (
+            <Link
+              href="/admin"
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                pathname.startsWith("/admin")
+                  ? "bg-gold-400 text-navy-900"
+                  : "text-navy-100 hover:bg-navy-700"
+              }`}
+            >
+              <ClipboardIcon className="h-5 w-5" />
+              Gestão
+            </Link>
+          )}
         </nav>
         <div className="border-t border-navy-700 pt-4">
           <p className="truncate px-3 text-sm font-semibold text-white">
@@ -133,6 +147,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
+        {session.user.role === "admin" && (
+          <Link
+            href="/admin"
+            className={`flex flex-col items-center gap-0.5 px-3 py-1 text-[11px] font-medium ${
+              pathname.startsWith("/admin") ? "text-navy-700" : "text-slate-400"
+            }`}
+          >
+            <ClipboardIcon className="h-5 w-5" />
+            Gestão
+          </Link>
+        )}
       </nav>
     </div>
   );
