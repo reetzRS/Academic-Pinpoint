@@ -2,6 +2,30 @@ import { getSession, Session, SessionUser } from "./session";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
+export interface Opportunity {
+  id: string;
+  tipo: string;
+  titulo: string;
+  descricao: string;
+  urlOrigem: string;
+  fonte: string;
+  instituicao?: string | null;
+  prazoInscricao?: string | null;
+  modalidade?: string | null;
+  local?: string | null;
+  valorBolsa?: string | null;
+  requisitos: string[];
+  areas: string[];
+  coletadoEm: string;
+}
+
+export interface Page<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -47,4 +71,19 @@ export const api = {
       method: "PUT",
       body: JSON.stringify(data),
     }),
+
+  opportunities: (params: {
+    tipo?: string;
+    q?: string;
+    page?: number;
+    personalizado?: boolean;
+  }) => {
+    const search = new URLSearchParams();
+    if (params.tipo) search.set("tipo", params.tipo);
+    if (params.q) search.set("q", params.q);
+    if (params.page) search.set("page", String(params.page));
+    if (params.personalizado) search.set("personalizado", "true");
+    const qs = search.toString();
+    return request<Page<Opportunity>>(`/opportunities${qs ? `?${qs}` : ""}`);
+  },
 };
