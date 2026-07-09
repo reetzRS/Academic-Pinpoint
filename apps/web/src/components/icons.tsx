@@ -1,0 +1,5 @@
+export const LogoMark = (p: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={p.className} fill="currentColor">
+    <path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
+  </svg>
+);
