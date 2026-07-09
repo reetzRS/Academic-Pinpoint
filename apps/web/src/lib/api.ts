@@ -95,4 +95,6 @@ export const api = {
 
   unsave: (id: string) =>
     request<{ salvo: boolean }>(`/opportunities/${id}/save`, { method: "DELETE" }),
+
+  saved: () => request<Opportunity[]>("/me/saved"),
 };
