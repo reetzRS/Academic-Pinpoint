@@ -55,6 +55,13 @@ export const PinIcon = (p: { className?: string }) => (
   </svg>
 );
 
+export const ExternalIcon = (p: { className?: string }) => (
+  <svg {...base} className={p.className}>
+    <path d="M14 5h5v5M19 5l-8 8" />
+    <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+  </svg>
+);
+
 export const LogoMark = (p: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={p.className} fill="currentColor">
     <path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
