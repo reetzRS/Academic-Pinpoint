@@ -1,4 +1,4 @@
-import { getSession, Session } from "./session";
+import { getSession, Session, SessionUser } from "./session";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -41,4 +41,10 @@ export const api = {
 
   login: (data: { email: string; senha: string }) =>
     request<Session>("/auth/login", { method: "POST", body: JSON.stringify(data) }),
+
+  updatePreferences: (data: { areas: string[]; tipos: string[] }) =>
+    request<SessionUser>("/me/preferences", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
 };
