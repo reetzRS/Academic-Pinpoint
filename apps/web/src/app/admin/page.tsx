@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api, ApiError, Opportunity } from "@/lib/api";
 import { TipoBadge } from "@/components/opportunity-card";
+import { TableRowSkeleton } from "@/components/skeletons";
 import { formatDate } from "@/lib/format";
 
 export default function AdminPage() {
@@ -42,7 +43,11 @@ export default function AdminPage() {
       </div>
 
       {loading && (
-        <p className="py-6 text-center text-sm text-slate-400">Carregando…</p>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <TableRowSkeleton isFirst />
+          <TableRowSkeleton />
+          <TableRowSkeleton />
+        </div>
       )}
 
       {!loading && erro && (

@@ -7,6 +7,7 @@ import { daysLeft, formatDate } from "@/lib/format";
 import { MODALIDADE_LABELS, TIPO_LABELS } from "@academic-pinpoint/shared";
 import { AppShell } from "@/components/app-shell";
 import { SaveButton } from "@/components/opportunity-card";
+import { OpportunityDetailSkeleton } from "@/components/skeletons";
 import { ExternalIcon } from "@/components/icons";
 
 export default function OportunidadePage() {
@@ -36,6 +37,8 @@ export default function OportunidadePage() {
       {erro && (
         <p className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{erro}</p>
       )}
+
+      {!opp && !erro && <OpportunityDetailSkeleton />}
 
       {opp && (
         <article>

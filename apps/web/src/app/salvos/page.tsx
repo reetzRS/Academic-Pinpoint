@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { api, Opportunity } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
 import { OpportunityCard } from "@/components/opportunity-card";
+import { CardSkeleton } from "@/components/skeletons";
 
 export default function SalvosPage() {
   const [items, setItems] = useState<Opportunity[]>([]);
@@ -22,7 +23,11 @@ export default function SalvosPage() {
         Oportunidades salvas
       </h1>
       {loading && (
-        <p className="py-6 text-center text-sm text-slate-400">Carregando…</p>
+        <div className="flex flex-col gap-3">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
       )}
       {!loading && items.length === 0 && (
         <div className="rounded-2xl bg-white p-8 text-center text-sm text-slate-500">

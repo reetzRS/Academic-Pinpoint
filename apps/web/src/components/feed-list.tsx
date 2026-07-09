@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api, Opportunity } from "@/lib/api";
 import { TIPOS, TIPO_LABELS } from "@academic-pinpoint/shared";
 import { OpportunityCard } from "./opportunity-card";
+import { CardSkeleton } from "./skeletons";
 import { SearchIcon } from "./icons";
 
 const CHIPS: { value: string; label: string }[] = [
@@ -97,12 +98,19 @@ export function FeedList({ personalizado }: { personalizado: boolean }) {
             )}
           </div>
         )}
+        {loading && items.length === 0 && (
+          <>
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+          </>
+        )}
         {items.map((o) => (
           <OpportunityCard key={o.id} opportunity={o} />
         ))}
       </div>
 
-      {loading && (
+      {loading && items.length > 0 && (
         <p className="py-6 text-center text-sm text-slate-400">Carregando…</p>
       )}
       {!loading && items.length < total && (
