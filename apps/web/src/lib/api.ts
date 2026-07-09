@@ -17,6 +17,7 @@ export interface Opportunity {
   requisitos: string[];
   areas: string[];
   coletadoEm: string;
+  salvo: boolean;
 }
 
 export interface Page<T> {
@@ -86,4 +87,12 @@ export const api = {
     const qs = search.toString();
     return request<Page<Opportunity>>(`/opportunities${qs ? `?${qs}` : ""}`);
   },
+
+  opportunity: (id: string) => request<Opportunity>(`/opportunities/${id}`),
+
+  save: (id: string) =>
+    request<{ salvo: boolean }>(`/opportunities/${id}/save`, { method: "POST" }),
+
+  unsave: (id: string) =>
+    request<{ salvo: boolean }>(`/opportunities/${id}/save`, { method: "DELETE" }),
 };
