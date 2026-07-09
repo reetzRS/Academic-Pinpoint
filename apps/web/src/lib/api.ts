@@ -2,6 +2,20 @@ import { getSession, Session, SessionUser } from "./session";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
+export interface AdminOpportunityInput {
+  tipo: string;
+  titulo: string;
+  descricao: string;
+  urlOrigem: string;
+  areas: string[];
+  instituicao?: string;
+  local?: string;
+  valorBolsa?: string;
+  prazoInscricao?: string;
+  modalidade?: string;
+  requisitos?: string[];
+}
+
 export interface Opportunity {
   id: string;
   tipo: string;
@@ -77,13 +91,17 @@ export const api = {
     tipo?: string;
     q?: string;
     page?: number;
+    pageSize?: number;
     personalizado?: boolean;
+    apenasAbertas?: boolean;
   }) => {
     const search = new URLSearchParams();
     if (params.tipo) search.set("tipo", params.tipo);
     if (params.q) search.set("q", params.q);
     if (params.page) search.set("page", String(params.page));
+    if (params.pageSize) search.set("pageSize", String(params.pageSize));
     if (params.personalizado) search.set("personalizado", "true");
+    if (params.apenasAbertas === false) search.set("apenasAbertas", "false");
     const qs = search.toString();
     return request<Page<Opportunity>>(`/opportunities${qs ? `?${qs}` : ""}`);
   },
@@ -97,4 +115,19 @@ export const api = {
     request<{ salvo: boolean }>(`/opportunities/${id}/save`, { method: "DELETE" }),
 
   saved: () => request<Opportunity[]>("/me/saved"),
+
+  adminCreate: (data: AdminOpportunityInput) =>
+    request<Opportunity>("/admin/opportunities", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  adminUpdate: (id: string, data: Partial<AdminOpportunityInput>) =>
+    request<Opportunity>(`/admin/opportunities/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  adminDelete: (id: string) =>
+    request<Opportunity>(`/admin/opportunities/${id}`, { method: "DELETE" }),
 };

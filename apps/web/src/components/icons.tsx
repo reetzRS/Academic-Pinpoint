@@ -67,3 +67,11 @@ export const LogoMark = (p: { className?: string }) => (
     <path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
   </svg>
 );
+
+export const ClipboardIcon = (p: { className?: string }) => (
+  <svg {...base} className={p.className}>
+    <path d="M9 2h6a1 1 0 0 1 1 1v1H8V3a1 1 0 0 1 1-1z" />
+    <path d="M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+    <path d="M9 12h6M9 16h4" />
+  </svg>
+);
